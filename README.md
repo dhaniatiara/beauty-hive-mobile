@@ -81,32 +81,39 @@ Perbedaan utama antara kata kunci final dan const terletak pada penggunaannya. S
 
 1. Pertama, saya membuat program flutter baru dengan judul beauty_hive (apikasi dan tema e-commerce yang saya pada tugas tugas sebelumnya). 
 2. Setelah itu, saya membuat file baru bernama `menu.dart` pada direktori lib dan melakukan modifikasi seperti pada tutorial agar kode saya lebih rapih.
-3. Setelah itu, saya mulai membuat tiga tombol sederhana dengan ikon dan teks dengan judul `Lihat Daftar Produk`, `Tambah Produk`, `Logout`. Saya membuatnya dengan menggunakan ElevatedButton.icon. 
-4. Sasing-masing dengan ikon, teks, dan warna latar belakang yang berbeda. Untuk menambahkan warna pada setiap tombol, saya menggunakan parameter style di ElevatedButton, dengan bantuan ElevatedButton.styleFrom dan backgroundColor. Salah satu potongan kodenya:
+3. Setelah itu, saya mulai membuat tiga tombol sederhana dengan ikon dan teks dengan judul `Lihat Daftar Produk`, `Tambah Produk`, `Logout`. Saya terlebih dahulu mendefinisikan Kelas ItemHomepage untuk Setiap Tombol. Saya buat kelas ItemHomepage yang akan menyimpan nama tombol, ikon, dan warna yang diinginkan untuk setiap tombol seperti berikut
 ```
-ElevatedButton.icon(
-  onPressed: () {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text("Kamu telah menekan tombol Lihat Daftar Produk")),
-      );
-  },
-  icon: const Icon(Icons.list),
-  label: const Text('Lihat Daftar Produk'),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color(0xFFF4F478), // Warna hex #F4F478
-  ),
-),
+class ItemHomepage {
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  ItemHomepage(this.name, this.icon, this.color);
+}
 ```
 
-Tombol-tombol ini ditampilkan secara vertikal dalam widget Column dan diberi jarak dengan SizedBox.
-5. Untuk menampilkan pesan snackbar saat tombol ditekan, pada setiap tombol saya tambahkan fungsi  `onPressed` yang memanggil `ScaffoldMessenger.of(context).showSnackBar(...)` untuk menampilkan Snackbar. Pesan yang keluar adalah : “Kamu telah menekan tombol Lihat Daftar Produk” untuk tombol pertama, “Kamu telah menekan tombol Tambah Produk” untuk tombol kedua, dan “Kamu telah menekan tombol Logout” untuk tombol ketiga.
-Contoh potongan kodenya:
+4. Kemudian. saya buat daftar items di dalam MyHomePage yang akan berisi tiga instance ItemHomepage dan menentukan ikon dan warna masing-masing tombol sesuai kebutuhan seperti berikut
 ```
-ScaffoldMessenger.of(context)
-  ..hideCurrentSnackBar()
-  ..showSnackBar(
-    const SnackBar(content: Text("Kamu telah menekan tombol Lihat Daftar Produk")),
-  );
+final List<ItemHomepage> items = [
+  ItemHomepage("Lihat Daftar Produk", Icons.list, const Color(0xFFF4F478)), // Kuning
+  ItemHomepage("Tambah Produk", Icons.add, const Color(0xFFED6E4B)),       // Merah
+  ItemHomepage("Logout", Icons.logout, const Color(0xFFDBC1FE)),           // Ungu Muda
+];
 ```
+5. Lalu, saya buat widget stateless ItemCard yang menerima satu ItemHomepage dan menampilkannya sebagai tombol. 
+6. Untuk menampilkan pesan snackbar saat tombol ditekan, saya menggunakan `ScaffoldMessenger.of(context):`. ScaffoldMessenger adalah widget yang mengontrol tampilan Snackbar. Setelah mendapatkan instance ScaffoldMessenger, saya menggunakan metode showSnackBar untuk menampilkan Snackbar di layar. Untuk membuat Snackbar, saya buat objek SnackBar dengan konten berupa teks atau widget lainnya. Lalu. saya tambahkan Pesan Snackbar pada onTap untuk menampilkan pesan Snackbar setiap kali tombol ditekan.
+Contoh implementasinya pada kode say aseperti berikut
+```
+onTap: () {
+  // Menampilkan Snackbar dengan pesan khusus
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar() // Menyembunyikan Snackbar sebelumnya
+    ..showSnackBar(
+      SnackBar(
+        content: Text("Kamu telah menekan tombol ${item.name}!"), // Pesan Snackbar
+        duration: const Duration(seconds: 2), // Durasi tampil 2 detik
+      ),
+    );
+},
+```
+7. Terakhir, saya tampilkan Tombol dalam `GridView` di MyHomePage untuk menampilkan daftar ItemCard. Sehingga tombol muncul dalam format grid.
