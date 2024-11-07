@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:beauty_hive/widgets/left_drawer.dart';
+import 'package:beauty_hive/productentry_form.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306165881'; // NPM
@@ -25,7 +27,9 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -128,8 +132,14 @@ class ItemCard extends StatelessWidget {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!"))
+              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")));
+            
+          if (item.name == "Tambah Produk") {
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProductEntryFormPage()),
             );
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(8),
@@ -139,7 +149,7 @@ class ItemCard extends StatelessWidget {
               children: [
                 Icon(
                   item.icon,
-                  color: Colors.black, // Ubah warna ikon menjadi hitam
+                  color: Colors.black,
                   size: 30.0,
                 ),
                 const SizedBox(height: 8),
