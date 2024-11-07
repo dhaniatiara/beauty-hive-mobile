@@ -117,3 +117,88 @@ onTap: () {
 },
 ```
 7. Terakhir, saya tampilkan Tombol dalam `GridView` di MyHomePage untuk menampilkan daftar ItemCard. Sehingga tombol muncul dalam format grid.
+
+
+## Tugas 8
+
+### 1. Apa kegunaan const di Flutter? Jelaskan apa keuntungan ketika menggunakan const pada kode Flutter. Kapan sebaiknya kita menggunakan const, dan kapan sebaiknya tidak digunakan?
+
+Kata kunci const digunakan untuk mendeklarasikan variabel yang merupakan compile time constants.
+
+Keuntungan menggunakan const pada kode Flutter: 
+
+- Optimasi Performa: Variabel “const” dievaluasi dan diselesaikan pada waktu kompilasi, menghasilkan peningkatan performa saat runtime.
+
+- Efisiensi Memori: Karena variabel “const” diselesaikan pada waktu kompilasi, variabel-variabel tersebut disimpan di satu lokasi memori, sehingga mengurangi penggunaan memori.
+
+- Optimasi Kode: Penggunaan “const” membantu mengidentifikasi dan menghilangkan perhitungan atau objek yang redundan, meningkatkan efisiensi kode.
+
+const sebaiknya digunakan saat memiliki nilai yang sudah diketahui dan dapat dihitung pada waktu kompilasi, seperti literal atau ekspresi yang hanya melibatkan konstanta lainnya
+
+### 2. Jelaskan dan bandingkan penggunaan Column dan Row pada Flutter. Berikan contoh implementasi dari masing-masing layout widget ini!
+
+Pada Row, main axis berjalan secara horizontal dan cross axis berjalan secara vertikal. Untuk Column, main axis berjalan secara vertikal dan cross axis berjalan secara horizontal.
+
+Contoh implementasi row:
+```
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    Image.asset('images/pic1.jpg'),
+    Image.asset('images/pic2.jpg'),
+    Image.asset('images/pic3.jpg'),
+  ],
+);
+```
+
+Contoh implementasi column:
+```
+Column(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    Image.asset('images/pic1.jpg'),
+    Image.asset('images/pic2.jpg'),
+    Image.asset('images/pic3.jpg'),
+  ],
+);
+```
+
+### 3. Sebutkan apa saja elemen input yang kamu gunakan pada halaman form yang kamu buat pada tugas kali ini. Apakah terdapat elemen input Flutter lain yang tidak kamu gunakan pada tugas ini? Jelaskan!
+
+Elemen input yang digunakan:
+
+1. TextFormField: Digunakan untuk menerima input teks, seperti Name, Description, Shade, dan Size dan digunakan untuk input numerik dengan validasi tambahan, seperti Price dan Amount.
+
+2. ElevatedButton: Digunakan untuk tombol Save yang akan menyimpan data setelah form tervalidasi.
+
+Elemen Input Lain di Flutter yang Tidak Digunakan dalam Tugas Ini:
+
+1. Checkbox: Checkbox membuat user bisa memilih atau membatalkan pilihan dari sebuah opsi yang berbentuk kotak centang. Biasanya digunakan untuk menampilkan pilihan boolean.
+2. Radio Button: Radio Button membuat user bisa memilih salah satu opsi dari beberapa pilihan. Biasanya digunakan untuk memilih satu dari beberapa opsi eksklusif.
+
+
+### 4. Bagaimana cara kamu mengatur tema (theme) dalam aplikasi Flutter agar aplikasi yang dibuat konsisten? Apakah kamu mengimplementasikan tema pada aplikasi yang kamu buat?
+
+Untuk menjaga konsistensi tema dalam aplikasi Flutter, saya menggunakan ThemeData yang diterapkan di `main.dart`. Dengan menggunakan ThemeData, kita dapat menentukan scheme warna, gaya teks, dan elemen visual lain secara global, sehingga semua halaman dan widget dalam aplikasi mengikuti tampilan yang seragam.
+
+Di `main.dart` saya menambahkan
+```
+theme: ThemeData(
+  colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+  useMaterial3: true,
+),
+```
+
+Dan untuk mengaksesnya saya bisa menulis kode ini di setiap halaman atau widget
+```
+backgroundColor: Theme.of(context).colorScheme.primary,
+```
+
+### 5. Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
+
+Saya menangani navigasi dengan menggunakan Navigator dan Route. Yang saya gunakan adalah Navigator.push() dan Navigator.pop()
+
+Navigator.push: Menambahkan halaman baru ke tumpukan (stack) navigasi. Halaman baru akan berada di atas halaman sebelumnya, sehingga pengguna dapat kembali dengan menekan tombol "Back".
+
+
+Navigator.pop: Menghapus halaman teratas dari tumpukan dan kembali ke halaman sebelumnya.
