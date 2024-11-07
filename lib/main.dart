@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:beauty_hive/menu.dart';
+import 'package:beauty_hive/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());

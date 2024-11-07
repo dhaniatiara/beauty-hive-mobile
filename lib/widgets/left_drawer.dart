@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:beauty_hive/menu.dart';
-import 'package:beauty_hive/productentry_form.dart';
+import 'package:beauty_hive/screens/menu.dart';
+import 'package:beauty_hive/screens/productentry_form.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});

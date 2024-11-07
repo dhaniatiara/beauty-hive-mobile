@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:beauty_hive/widgets/left_drawer.dart';
-import 'package:beauty_hive/productentry_form.dart';
+import 'package:beauty_hive/widgets/product_card.dart';
+import 'package:beauty_hive/screens/productentry_form.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306165881'; // NPM
