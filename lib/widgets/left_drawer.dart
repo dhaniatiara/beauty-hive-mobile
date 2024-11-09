@@ -54,8 +54,8 @@ class LeftDrawer extends StatelessWidget {
           ),
 
           ListTile(
-            leading: const Icon(Icons.mood),
-            title: const Text('Tambah Mood'),
+            leading: const Icon(Icons.add),
+            title: const Text('Tambah Produk'),
             onTap: () {
               Navigator.push(
                 context,
