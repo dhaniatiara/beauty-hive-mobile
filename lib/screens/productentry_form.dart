@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:beauty_hive/screens/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:beauty_hive/widgets/left_drawer.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class ProductEntryFormPage extends StatefulWidget {
   const ProductEntryFormPage({super.key});
@@ -12,13 +17,14 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = "";
   int _price = 0;
-	String _description = "";
+  String _description = "";
   String _shade = "";
   String _size = "";
-	int _amount = 0;
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -30,14 +36,13 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
         foregroundColor: Colors.white,
       ),
       drawer: const LeftDrawer(),
-      // TODO: Tambahkan drawer yang sudah dibuat di sini
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Name
+              // Name Field
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -48,7 +53,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
-                  maxLength: 255, 
+                  maxLength: 255,
                   onChanged: (String? value) {
                     setState(() {
                       _name = value!;
@@ -63,7 +68,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 ),
               ),
 
-              // Price
+              // Price Field
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -96,7 +101,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 ),
               ),
 
-              // Description
+              // Description Field
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -107,7 +112,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
-                  maxLength: 255, 
+                  maxLength: 255,
                   onChanged: (String? value) {
                     setState(() {
                       _description = value!;
@@ -174,39 +179,9 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 ),
               ),
 
-              // Amount
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "Amount",
-                    labelText: "Amount",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _amount = int.tryParse(value!) ?? 0;
-                    });
-                  },
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return "Amount tidak boleh kosong!";
-                    }
-                    final parsedValue = int.tryParse(value);
-                    if (parsedValue == null) {
-                      return "Amount harus berupa angka!";
-                    }
-                    
-                    if (parsedValue < 1) {
-                      return 'Value must be at least 1';
-                    }
-                    return null;
-                  },
-                ),
-              ),
 
+
+              // Save Button
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -214,40 +189,41 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).colorScheme.primary),
+                        Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Product Berhasil Tersimpan'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Name: $_name'),
-                                    Text('Price: $_price'),
-                                    Text('Description: $_description'),
-                                    Text('Shade: $_shade'),
-                                    Text('Size: $_size'),
-                                    Text('Amount: $_amount'),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _formKey.currentState!.reset();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
+                        // Send the data to the server
+                        final response = await request.postJson(
+                          "http://127.0.0.1:8000/create-flutter/",
+                          jsonEncode(<String, dynamic>{
+                            'name': _name,
+                            'price': _price.toString(),
+                            'description': _description,
+                            'shade': _shade,
+                            'size': _size,
+                          }),
                         );
+
+                        if (context.mounted) {
+                            if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                content: Text("Produk baru berhasil disimpan!"),
+                                ));
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                                );
+                            } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                    content:
+                                        Text("Terdapat kesalahan, silakan coba lagi."),
+                                ));
+                            }
+                        }
                       }
                     },
                     child: const Text(
@@ -259,9 +235,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
               ),
             ],
           ),
-        )
+        ),
       ),
     );
   }
 }
-

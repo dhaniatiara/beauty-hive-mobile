@@ -1,14 +1,16 @@
+import 'package:beauty_hive/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:beauty_hive/widgets/left_drawer.dart';
-import 'package:beauty_hive/widgets/product_card.dart';
-import 'package:beauty_hive/screens/productentry_form.dart';
+
 
 class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
+  
   final String npm = '2306165881'; // NPM
   final String name = 'Dhania'; // Nama
   final String className = 'PBP B'; // Kelas
 
-  MyHomePage({super.key});
+  
 
   final List<ItemHomepage> items = [
     ItemHomepage("Lihat Daftar Produk", Icons.list, const Color(0xFFF4F478)),
@@ -62,13 +64,13 @@ class MyHomePage extends StatelessWidget {
             // GridView untuk menampilkan tombol dalam bentuk grid
             Expanded(
               child: GridView.count(
-                primary: false,
+                primary: true,
                 padding: const EdgeInsets.all(20),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 shrinkWrap: true,
-                children: items.map((item) {
+                children: items.map((ItemHomepage item) {
                   return ItemCard(item);
                 }).toList(),
               ),
@@ -109,61 +111,3 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ItemHomepage(this.name, this.icon, this.color);
-}
-
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")));
-            
-          if (item.name == "Tambah Produk") {
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProductEntryFormPage()),
-            );
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.black,
-                  size: 30.0,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.black), // Ubah warna teks menjadi hitam
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

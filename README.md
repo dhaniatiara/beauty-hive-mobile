@@ -202,3 +202,126 @@ Navigator.push: Menambahkan halaman baru ke tumpukan (stack) navigasi. Halaman b
 
 
 Navigator.pop: Menghapus halaman teratas dari tumpukan dan kembali ke halaman sebelumnya.
+
+## Tugas 9
+
+### 1. Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+
+Membuat model untuk mengelola data JSON membantu dalam strukturisasi data sehingga mempermudah proses parsing (mengubah JSON menjadi objek Dart) dan serialisasi (mengubah objek Dart menjadi JSON). Model memastikan bahwa data JSON yang diterima memiliki struktur yang sesuai dengan aplikasi. Mempermudah validasi data, terutama jika ada perubahan pada struktur JSON. Dengan model, kita dapat menggunakan properti (misalnya product.fields.name) daripada harus memanipulasi data JSON mentah.
+
+Jika tidak menggunakan model, Anda harus mem-parsing JSON secara manual, yang lebih rentan terhadap error seperti null atau ketidaksesuaian tipe data.Error parsing bisa terjadi jika data yang diterima tidak sesuai ekspektasi.
+
+### 2. Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
+
+Dalam tugas ini, library http berguna untuk:
+- Fungsi get digunakan untuk mengirim permintaan HTTP GET ke server dan menerima respons JSON.
+- Fungsi post digunakan untuk mengirim data dari aplikasi Flutter ke server melalui body request.
+- http menyediakan mekanisme untuk menangani status kode respons (200, 404, dll.) dan parsing data dari respons server.
+
+### 3. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+
+CookieRequest menyimpan cookie yang diterima dari server setelah login, yang digunakan untuk autentikasi di permintaan selanjutnya. Cookie membantu menjaga sesi pengguna tetap aktif tanpa harus login ulang. CookieRequest memungkinkan pengiriman permintaan HTTP GET dan POST dengan menyertakan cookie secara otomatis. Dengan cookie, server dapat mengenali pengguna yang sedang terautentikasi.
+
+
+### 4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+
+1. Input Data oleh Pengguna: Data diinput melalui form Flutter menggunakan widget seperti TextFormField. Data yang diinput disimpan ke variabel atau model Dart.
+2. Mengirim Data ke Server: Data dikirim melalui HTTP POST menggunakan CookieRequest.postJson atau http.post. Data dikirim dalam format JSON ke endpoint API Django.
+3. Pemrosesan di Django: Django menerima data dari Flutter dan memvalidasinya. Data kemudian disimpan ke database jika valid. 
+4. Mengambil Data dari Server: Flutter menggunakan HTTP GET untuk meminta data dari endpoint API. Django mengirimkan data dalam format JSON ke Flutter.
+5. Menampilkan Data: Flutter mem-parsing JSON menjadi objek model Dart. Data yang sudah diproses ditampilkan pada UI menggunakan widget seperti ListView atau GridView.
+
+
+### 5. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+
+1. Login:
+
+- Input: Pengguna memasukkan email/username dan password di Flutter.
+- Proses di Django: Data dikirim melalui HTTP POST ke endpoint login Django. Django memvalidasi username dan password. Jika valid: Django membuat session dan mengirimkan cookie session ke Flutter.
+- Flutter: Cookie disimpan oleh CookieRequest untuk digunakan pada permintaan berikutnya
+
+2. Register:
+
+- Input: Pengguna memasukkan data seperti nama, email, dan password di Flutter.
+- Proses di Django: Data dikirim melalui HTTP POST ke endpoint register Django. Django memvalidasi dan menyimpan data ke database.
+- Flutter: Jika registrasi sukses, pengguna diarahkan ke halaman login.
+
+3. Logout:
+
+- Flutter: Flutter mengirim HTTP GET atau POST ke endpoint logout Django menggunakan cookie session.
+- Django: Django menghapus sesi pengguna. Cookie menjadi tidak valid.
+- Flutter: Cookie dihapus dari CookieRequest, dan pengguna diarahkan kembali ke halaman login. Tampilkan Menu Setelah Login:
+
+Setelah login, cookie session dikirim bersama setiap permintaan ke server untuk mengakses data dan halaman yang memerlukan autentikasi. Jika cookie valid, server mengembalikan data yang diminta, dan Flutter menampilkan menu atau halaman yang sesuai.
+
+### 6. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial)
+
+- Saya pertama mengimplementasikan fitur registrasi akun pada Flutter dengan cara membuat authentication django app di proyek django saya yaitu beautyhive. Setelah aku saya mengatur segala peraturan yang diperlukan saat membaut django app baru seperti modifikasi di settings.py, melakukan pip install, dan menambahkan requirements.txt.
+- Saya kemudian membuat metode view di views.py dalam authentication yang berfungsi untuk menjalankan login. Kemudian tidak lupa mengatur urls nya. 
+- Untuk integrasi sistem autentikasi pada flutter, saya instal package yang seperti ada pada tutorial, kemudian saya mengubah main.dart saya menjadi seperti berikut:
+
+```
+import 'package:beauty_hive/screens/login.dart';
+import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Provider(
+      create: (_) {
+        CookieRequest request = CookieRequest();
+        return request;
+      },
+      child: MaterialApp(
+        title: 'BeautyHive',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+          
+        ),
+        home: const LoginPage()
+      ),
+    );
+  }
+}
+```
+
+- Setelah itu saya membuat file login.dart di dalam screens untuk menampilkan tampilan halaman login
+- Lalu saya menambahkn fungsi register di views.py django authentication saya agar dapat melakukan registrasi bagi pengguna baru. Kemudian lanjut membuat screen baru bernama register.dart
+- Untuk membuat model kustom, saya login local django saya dan mengakses json nya, kemudian membuka situs quicktype untuk mendapatkan data json yang diolah di quicktype. Hasil dari kode tersebut saya masukkan ke file dinamakan product_entry.dart di dalam folder baru di dalam lib yaitu models. 
+- Untuk fetch data dari django, saya melakukan `flutter pub add http` pada proyek flutter dan melakukan modifkasi pada file yang ada di folder android seperti pada tutorial. 
+- Saya kemudian membuat screen baru yang dinamakan list_productentry.dart dan mengisi nya seperti pada tutorial dan menyesuaikan flutter dan django saya. Lalu saya menambahkan halaman page tersebut di widget left drawer dan juga melakukan penyesuaian lainnya pada file lain agar halaman ini bisa dikunjungi oleh pengguna di menu dan leftdrawer. 
+- Untuk list_productentry saya hanya dapat menampilkan name, price, description pada produk.
+- Saya kemudian membuat halaman detail untuk setiap item yang ada pada list_productentry dengan cara membuat screen baru yang dinamakan product_detail. Product_detail akan berfungsi menampilkan detail model saya lainnya yaitu menampilkan size dan shade dari produk dan juga tombol back untuk kembali ke page list_productentry. Untuk menampilakn detail kurang lebih membuat kode berikut
+```
+const SizedBox(height: 8),
+Text("Price: Rp${product.fields.price}"),
+const SizedBox(height: 8),
+Text("Description: ${product.fields.description}"),
+const SizedBox(height: 8),
+Text("Shade: ${product.fields.shade}"),
+const SizedBox(height: 8),
+Text("Size: ${product.fields.size}"),
+const SizedBox(height: 20),
+```
+- Kemudian saya juga melakukan pengaturan terhadap halaman list_productentry.dart agar tiap box detail halaman bisa dipencet dan mengarah pada detail produk. Untuk menampilkan detail produk tertentu saya menggunakan 
+```
+  Future<Product> fetchProductDetail(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/json/${widget.productID}/');
+
+    // Decode the response into JSON and convert it into a Product object
+    return Product.fromJson(response[0]);
+  }
+```
+- Hal ini agar flutter dapat menampilkan detail dari produk tertentu. 
+- Untuk integrasi form flutter dengan django, saya memodifikasi file views pada django main app dengan menambahkan fungsi create_product_flutter dan memanggilnya di dalam productentry_form.dart pada proyek flutter saya dan lanjut melakukan penyesuaian fungsionalitas lainnya di file tersebut. 
+- Saya juga menambahkan fitur logout yang proses nya kurang lebih sama seperti login.
